@@ -10,16 +10,40 @@ import {
   Users, 
   Warehouse,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
+  Brain,
+  QrCode,
+  Map,
+  Mic
 } from 'lucide-react';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
 export default function Landing() {
   const features = [
     {
+      icon: Brain,
+      title: 'AI Demand Forecasting',
+      description: 'Predict stockouts before they happen with intelligent consumption analysis',
+    },
+    {
+      icon: QrCode,
+      title: 'QR Code System',
+      description: 'Generate and scan QR codes for lightning-fast product identification',
+    },
+    {
+      icon: Map,
+      title: 'Warehouse Heatmap',
+      description: 'Visual 2D grid showing rack utilization and movement patterns',
+    },
+    {
+      icon: Mic,
+      title: 'Voice Commands',
+      description: 'Hands-free control for warehouse staff carrying boxes',
+    },
+    {
       icon: Package,
       title: 'Product Management',
-      description: 'Complete control over your product catalog with SKU tracking and categorization',
+      description: 'Complete control over your product catalog with SKU tracking',
     },
     {
       icon: Warehouse,
@@ -36,24 +60,14 @@ export default function Landing() {
       title: 'Real-Time Analytics',
       description: 'Monitor KPIs and track stock movements with comprehensive reporting',
     },
-    {
-      icon: Shield,
-      title: 'Audit Trail',
-      description: 'Complete stock ledger with full traceability of all movements',
-    },
-    {
-      icon: Zap,
-      title: 'Low Stock Alerts',
-      description: 'Automatic notifications when inventory reaches minimum thresholds',
-    },
   ];
 
   const benefits = [
-    'Replace manual registers and Excel tracking',
+    'AI predicts stockouts before they happen',
+    'QR codes eliminate manual entry errors',
+    'Visual heatmap optimizes warehouse layout',
+    'Voice commands for hands-free operation',
     'Real-time inventory visibility',
-    'Reduce stock discrepancies',
-    'Improve operational efficiency',
-    'Multi-user role-based access',
     'Complete audit compliance',
   ];
 
@@ -90,12 +104,12 @@ export default function Landing() {
             Powered by JSHS
           </div>
           <h1 className="mb-6 text-4xl font-bold tracking-tight xl:text-6xl">
-            Modern Inventory Management
+            AI-Powered Inventory Management
             <span className="block text-primary mt-2">Made Simple</span>
           </h1>
           <p className="mb-8 text-lg text-muted-foreground xl:text-xl max-w-2xl mx-auto">
-            StockMaster digitizes and streamlines all your stock operations across multiple warehouses. 
-            Real-time tracking, automated alerts, and complete audit trails.
+            StockMaster combines AI forecasting, QR code scanning, warehouse heatmaps, and voice commands 
+            to revolutionize your inventory operations. Real-time tracking with predictive insights.
           </p>
           <div className="flex flex-col gap-4 xl:flex-row xl:justify-center">
             <Button asChild size="lg" className="text-lg h-12 px-8">

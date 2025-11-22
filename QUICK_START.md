@@ -1,215 +1,259 @@
-# JSHS StockMaster Quick Start Guide
+# Quick Start Guide - Advanced Features
 
-## 🎯 What's New
+## Accessing Advanced Features
 
-### ✅ Bug Fixed
-- **Product Creation Error**: Fixed the "Failed to save product" error when adding new products without a category
+1. **Login to StockMaster**
+   - Navigate to the login page
+   - Use your credentials to access the system
 
-### 🚀 New Features
-- **Landing Page**: Professional landing page showcasing JSHS brand and StockMaster features
-  - Modern, responsive design
-  - Feature highlights and benefits
-  - Call-to-action buttons
-  - Dark/light mode support
-- **MongoDB Atlas Support**: Complete Express.js + MongoDB backend as an alternative to Supabase
-  - Full REST API with JWT authentication
-  - Role-based access control
-  - Comprehensive documentation
-- **Dark/Light Mode Toggle**: Switch between dark and light themes with system preference support
-  - Available in header for logged-in users
-  - Available on login page for all users
-  - Persists preference in localStorage
-
-## 📋 Choose Your Backend
-
-### Option 1: Continue with Supabase (Current Setup)
-
-**No changes needed!** Your application works exactly as before.
-
-```bash
-npm install
-npm run dev
-```
-
-Access at: `http://localhost:5173`
-
-### Option 2: Migrate to MongoDB Atlas (New)
-
-**Follow these steps:**
-
-1. **Read the Migration Guide**
-   ```bash
-   # Open MONGODB_MIGRATION_GUIDE.md
-   ```
-
-2. **Set Up MongoDB Atlas**
-   - Create free account at https://www.mongodb.com/cloud/atlas
-   - Create a cluster (free M0 tier)
-   - Get connection string
-
-3. **Install Server Dependencies**
-   ```bash
-   cd server
-   npm install
-   ```
-
-4. **Configure Environment**
-   ```bash
-   cd server
-   cp .env.example .env
-   # Edit .env with your MongoDB credentials
-   ```
-
-5. **Start Backend Server**
-   ```bash
-   cd server
-   npm start
-   ```
-   Server runs on: `http://localhost:5000`
-
-6. **Update Frontend Config**
-   ```bash
-   # In root directory, create/update .env
-   echo "VITE_API_URL=http://localhost:5000/api" > .env
-   ```
-
-7. **Start Frontend**
-   ```bash
-   npm run dev
-   ```
-   Access at: `http://localhost:5173`
-
-## 📚 Documentation
-
-| Document | Description |
-|----------|-------------|
-| `README.md` | Main project documentation |
-| `MONGODB_MIGRATION_GUIDE.md` | Complete MongoDB setup guide |
-| `CHANGES_SUMMARY.md` | Detailed changes and technical info |
-| `server/README.md` | Backend server setup |
-| `server/API_REFERENCE.md` | Complete API documentation |
-
-## 🔧 Quick Commands
-
-### Supabase Backend (Current)
-```bash
-# Install and run
-npm install
-npm run dev
-
-# Lint
-npm run lint
-
-# Build
-npm run build
-```
-
-### MongoDB Backend (New)
-```bash
-# Backend
-cd server
-npm install
-npm start          # Production
-npm run dev        # Development with auto-reload
-
-# Frontend
-npm install
-npm run dev
-```
-
-## 🧪 Testing
-
-### Test Supabase Backend
-```bash
-npm run dev
-# Open http://localhost:5173
-# Register and test product creation
-```
-
-### Test MongoDB Backend
-```bash
-# Terminal 1: Start backend
-cd server
-npm start
-
-# Terminal 2: Test health endpoint
-curl http://localhost:5000/api/health
-
-# Terminal 3: Start frontend
-npm run dev
-
-# Open http://localhost:5173
-```
-
-## 🎓 First Time Setup
-
-### With Supabase (Current)
-1. Start the app: `npm run dev`
-2. Register a new account (first user becomes admin)
-3. Start adding products, warehouses, and categories
-
-### With MongoDB
-1. Follow "Option 2" steps above
-2. Register via API or frontend (first user becomes admin)
-3. Start using the application
-
-## 🔐 Default Admin Setup
-
-**First registered user automatically becomes admin!**
-
-Example registration:
-```bash
-# Via API (MongoDB)
-curl -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "admin",
-    "email": "admin@stockmaster.com",
-    "password": "Admin@123",
-    "nickname": "System Administrator"
-  }'
-
-# Or via frontend (both backends)
-# Just register through the UI
-```
-
-## 🆘 Troubleshooting
-
-### Product Creation Still Failing?
-- Clear browser cache and reload
-- Check browser console for errors
-- Verify database connection
-
-### MongoDB Connection Issues?
-- Check MongoDB Atlas IP whitelist
-- Verify connection string in `.env`
-- Ensure database user has correct permissions
-
-### Port Already in Use?
-```bash
-# Change port in server/.env
-PORT=5001
-
-# Or kill process
-lsof -ti:5000 | xargs kill -9
-```
-
-## 📞 Need Help?
-
-1. Check the relevant documentation file
-2. Review error messages in console
-3. Verify environment variables
-4. Check MongoDB Atlas dashboard (if using MongoDB)
-5. Review API_REFERENCE.md for endpoint details
-
-## 🎉 You're Ready!
-
-Choose your backend option and start managing your inventory with StockMaster!
+2. **Navigate to Advanced Features**
+   - Click "Advanced Features" in the main navigation menu
+   - Or go directly to `/advanced`
 
 ---
 
-**Quick Links:**
-- 📖 [Main README](./README.md)
-- 🔄 [MongoDB Migration Guide](./MONGODB_MIGRATION_GUIDE.md)
-- 📝 [Changes Summary](./CHANGES_SUMMARY.md)
-- 🔌 [API Reference](./server/API_REFERENCE.md)
+## Feature 1: AI Demand Forecasting
+
+### What It Does
+Predicts when products will run out of stock based on historical consumption patterns.
+
+### How to Use
+1. Click the **"AI Forecasting"** tab
+2. View forecast cards for each product showing:
+   - Current stock level
+   - Average daily consumption
+   - Days until stockout
+   - Consumption trend (increasing/decreasing/stable)
+   - Confidence level
+
+### Understanding the Display
+- **Red cards**: Critical - will run out in < 7 days
+- **Yellow cards**: Warning - will run out in 7-14 days
+- **Green cards**: Healthy - sufficient stock
+- **Trend arrows**: ↑ Increasing consumption, ↓ Decreasing, → Stable
+
+### Tips
+- Forecasts improve with more historical data
+- High confidence predictions are more reliable
+- Use predictions to plan reorders proactively
+
+---
+
+## Feature 2: QR Code System
+
+### What It Does
+Generate QR codes for products and scan them with your device camera.
+
+### How to Use
+
+#### Generating QR Codes
+1. Click the **"QR Codes"** tab
+2. Select a product from the list on the right
+3. View the generated QR code
+4. Click **"Download QR Code"** to save as PNG image
+5. Print and attach to physical products or racks
+
+#### Scanning QR Codes
+1. Click **"Scan QR Code"** button
+2. Allow camera permissions when prompted
+3. Click **"Start Camera"**
+4. Point camera at QR code
+5. Product details will appear automatically
+
+### Tips
+- Print QR codes on durable labels
+- Place QR codes at eye level for easy scanning
+- Use mobile devices for scanning while moving around warehouse
+- QR codes work offline once generated
+
+---
+
+## Feature 3: Warehouse Heatmap
+
+### What It Does
+Visual 2D grid showing warehouse rack utilization and activity patterns.
+
+### How to Use
+1. Click the **"Warehouse Map"** tab
+2. Choose view mode:
+   - **Utilization**: Shows how full each rack is
+   - **Activity**: Shows movement frequency
+
+#### Utilization View
+- **Gray**: < 30% full (underutilized)
+- **Green**: 30-50% full (optimal)
+- **Yellow**: 50-70% full (getting full)
+- **Orange**: 70-90% full (nearly full)
+- **Red**: > 90% full (critical)
+
+#### Activity View
+- **Gray**: < 5 movements (low activity)
+- **Light Blue**: 5-10 movements
+- **Medium Blue**: 10-15 movements
+- **Blue**: 15-20 movements
+- **Dark Blue**: > 20 movements (high activity)
+
+### Interacting with the Heatmap
+- Click any rack to see detailed information:
+  - Capacity
+  - Current stock
+  - Utilization percentage
+  - Movement frequency
+  - List of products in that rack
+
+### Tips
+- Use utilization view to identify overcrowded racks
+- Use activity view to optimize warehouse layout
+- Place high-activity items near shipping areas
+- Redistribute stock from red (critical) racks
+
+---
+
+## Feature 4: Voice Commands
+
+### What It Does
+Control StockMaster hands-free using voice commands.
+
+### How to Use
+1. Click the **"Voice Control"** tab
+2. Allow microphone permissions when prompted
+3. Click the large microphone button
+4. Speak your command clearly
+5. Wait for system confirmation
+6. Click again to stop listening
+
+### Supported Commands
+
+#### Check Stock
+- "Check stock of Steel Rods"
+- "Check availability for Bolts"
+
+#### Create Operations
+- "Create receipt for 50 units of Screws"
+- "Create delivery for 20 units of Nuts"
+
+#### Navigation
+- "Show dashboard"
+- "Go to products"
+- "Show low stock alerts"
+
+### Tips for Best Results
+- Speak clearly at normal pace
+- Use exact product names
+- Minimize background noise
+- Wait for beep before speaking
+- One command at a time
+- Grant microphone permissions
+
+### Browser Compatibility
+- ✅ Chrome (recommended)
+- ✅ Edge
+- ✅ Safari
+- ❌ Firefox (not supported)
+
+---
+
+## Troubleshooting
+
+### Camera Not Working
+- Check browser permissions (Settings → Privacy → Camera)
+- Ensure no other app is using the camera
+- Try refreshing the page
+- Use Chrome or Safari for best compatibility
+
+### Microphone Not Working
+- Check browser permissions (Settings → Privacy → Microphone)
+- Ensure microphone is not muted
+- Try a different browser (Chrome recommended)
+- Check system microphone settings
+
+### QR Code Not Scanning
+- Ensure good lighting
+- Hold camera steady
+- Position QR code within the frame
+- Try uploading QR code image instead
+
+### Voice Commands Not Recognized
+- Speak more clearly
+- Use exact product names from your inventory
+- Check microphone volume
+- Reduce background noise
+
+### Forecasts Not Showing
+- Ensure you have products in the system
+- Create some stock movements (receipts, deliveries)
+- Wait for at least a few days of data
+- Check that stock ledger has entries
+
+---
+
+## Best Practices
+
+### For Warehouse Staff
+1. **Use QR codes** for quick product identification
+2. **Use voice commands** when hands are full
+3. **Check heatmap** before storing new items
+4. **Review forecasts** daily for reorder planning
+
+### For Managers
+1. **Monitor forecasts** to prevent stockouts
+2. **Analyze heatmap** to optimize warehouse layout
+3. **Generate QR codes** for all new products
+4. **Train staff** on voice commands
+
+### For Administrators
+1. **Print QR codes** for all products
+2. **Set up warehouse grid** in heatmap
+3. **Review forecast accuracy** regularly
+4. **Optimize based on insights**
+
+---
+
+## Getting Help
+
+### Documentation
+- `ADVANCED_FEATURES.md` - Detailed technical documentation
+- `FEATURE_SUMMARY.md` - Implementation overview
+- `README.md` - General system documentation
+
+### Support
+- Check browser console for error messages
+- Verify permissions for camera and microphone
+- Ensure you're using a supported browser
+- Test with sample data first
+
+---
+
+## Next Steps
+
+1. **Explore each feature** in the Advanced Features page
+2. **Generate QR codes** for your products
+3. **Review AI forecasts** for reorder planning
+4. **Optimize warehouse** using heatmap insights
+5. **Train staff** on voice commands
+
+---
+
+## Tips for Maximum Impact
+
+### For Demonstrations
+1. Start with **AI Forecasting** - shows intelligence
+2. Demo **QR scanning** with phone - shows hardware integration
+3. Show **Heatmap** - impressive visualization
+4. End with **Voice commands** - wow factor
+
+### For Academic Projects
+- Highlight the AI/ML aspects of forecasting
+- Emphasize hardware integration (camera, mic)
+- Showcase data visualization skills
+- Demonstrate full-stack capabilities
+
+### For Job Interviews
+- Explain the problem each feature solves
+- Discuss technical implementation choices
+- Show how features integrate with existing system
+- Highlight user experience considerations
+
+---
+
+Enjoy your AI-powered warehouse management system! 🚀

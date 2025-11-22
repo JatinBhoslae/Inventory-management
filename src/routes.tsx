@@ -6,6 +6,7 @@ import Deliveries from './pages/Deliveries';
 import Transfers from './pages/Transfers';
 import Adjustments from './pages/Adjustments';
 import StockLedgerPage from './pages/StockLedger';
+import AdvancedFeatures from './pages/AdvancedFeatures';
 import Login from './pages/Login';
 import type { ReactNode } from 'react';
 
@@ -57,6 +58,11 @@ const routes: RouteConfig[] = [
     name: 'Stock Ledger',
     path: '/ledger',
     element: <StockLedgerPage />,
+  },
+  {
+    name: 'Advanced Features',
+    path: '/advanced',
+    element: <AdvancedFeatures />,
   },
   {
     name: 'Login',
