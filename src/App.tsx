@@ -9,10 +9,10 @@ import routes from './routes';
 
 const AppContent = () => {
   const location = useLocation();
-  const showHeader = location.pathname !== '/' && location.pathname !== '/login';
+  const showHeader = location.pathname !== '/' && location.pathname !== '/login' && location.pathname !== '/shop-login';
 
   return (
-    <RequireAuth whiteList={['/login', '/']}>
+    <RequireAuth whiteList={['/login', '/shop-login', '/', '/shop', '/shop/*', '/product/*', '/cart', '/checkout', '/user/profile', '/user/orders']}>
       <div className="flex flex-col min-h-screen">
         {showHeader && <Header />}
         <main className="flex-grow">

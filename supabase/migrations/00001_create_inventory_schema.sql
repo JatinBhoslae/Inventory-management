@@ -201,6 +201,12 @@ CREATE TABLE IF NOT EXISTS profiles (
   created_at timestamptz DEFAULT now()
 );
 
+-- Extend profiles with optional user fields for shopper UI
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS phone text;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS gender text;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS address text;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS avatar_url text;
+
 -- Create warehouses table
 CREATE TABLE IF NOT EXISTS warehouses (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

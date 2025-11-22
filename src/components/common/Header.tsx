@@ -20,10 +20,15 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { user, profile, signOut } = useAuth();
-  const navigation = routes.filter((route) => route.visible !== false);
+  const adminMode = typeof window !== 'undefined' && localStorage.getItem('admin_mode') === 'true';
+  const hasInventoryAccess = adminMode || (profile && (profile.role === 'inventory_manager' || profile.role === 'admin'));
+  const navigation = hasInventoryAccess
+    ? routes.filter((route) => route.visible !== false && route.path !== '/shop')
+    : routes.filter((route) => route.path === '/shop');
 
   const handleSignOut = async () => {
     await signOut();
+    localStorage.removeItem('admin_mode');
     window.location.href = '/login';
   };
 
@@ -37,6 +42,9 @@ const Header = () => {
             </div>
             <span className="text-xl font-bold text-foreground">StockMaster</span>
           </Link>
+          {hasInventoryAccess && (
+            <Link to="/shop" className="text-primary hover:underline">Shop</Link>
+          )}
 
           <nav className="hidden xl:flex items-center gap-1">
             {navigation.map((item) => (
@@ -56,7 +64,7 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          {user ? (
+          {user || adminMode ? (
             <>
               <ThemeToggle />
               <Popover>
@@ -68,12 +76,17 @@ const Header = () => {
                 <PopoverContent className="w-56" align="end">
                   <div className="space-y-2">
                     <div className="px-2 py-1.5">
-                      <p className="text-sm font-medium">{profile?.full_name || 'User'}</p>
-                      <p className="text-xs text-muted-foreground">{profile?.email}</p>
-                      <p className="text-xs text-muted-foreground capitalize mt-1">
-                        Role: {profile?.role?.replace('_', ' ')}
-                      </p>
+                      <p className="text-sm font-medium">{adminMode ? 'Admin' : (profile?.full_name || 'User')}</p>
+                      {!adminMode && <p className="text-xs text-muted-foreground">{profile?.email}</p>}
+                      <p className="text-xs text-muted-foreground capitalize mt-1">Role: {adminMode ? 'admin' : profile?.role?.replace('_', ' ')}</p>
                     </div>
+                    {!adminMode && (
+                      <div className="border-t pt-2">
+                        <Button asChild variant="ghost" className="w-full justify-start">
+                          <Link to="/user/profile">Profile</Link>
+                        </Button>
+                      </div>
+                    )}
                     <div className="border-t pt-2">
                       <Button
                         variant="ghost"
@@ -115,9 +128,11 @@ const Header = () => {
               </Sheet>
             </>
           ) : (
-            <Button asChild>
-              <Link to="/login">Sign In</Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button asChild>
+                <Link to="/login">Manager Sign In</Link>
+              </Button>
+            </div>
           )}
         </div>
       </div>

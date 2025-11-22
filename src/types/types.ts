@@ -7,6 +7,10 @@ export interface Profile {
   full_name: string | null;
   role: UserRole;
   created_at: string;
+  phone?: string | null;
+  gender?: 'male' | 'female' | 'other' | null;
+  address?: string | null;
+  avatar_url?: string | null;
 }
 
 export interface Warehouse {
@@ -208,4 +212,21 @@ export interface DashboardKPIs {
   lowStockItems: number;
   pendingReceipts: number;
   pendingDeliveries: number;
+}
+
+export interface TopSellingProduct {
+  id: string;
+  name: string;
+  sku: string;
+  total_sold: number;
+  category_name?: string | null;
+}
+
+export interface RecentPurchasedProduct {
+  id: string;
+  name: string;
+  sku: string;
+  quantity: number;
+  receipt_date: string;
+  category_name?: string | null;
 }
