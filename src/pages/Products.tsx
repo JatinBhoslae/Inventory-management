@@ -78,20 +78,28 @@ export default function Products() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const productData = {
+        name: formData.name,
+        sku: formData.sku,
+        category_id: formData.category_id === '' || formData.category_id === 'none' ? null : formData.category_id,
+        unit_of_measure: formData.unit_of_measure,
+        initial_stock: formData.initial_stock,
+        min_stock_level: formData.min_stock_level,
+        is_active: true,
+      };
+
       if (editingProduct) {
-        await updateProduct(editingProduct.id, formData);
+        await updateProduct(editingProduct.id, productData);
         toast({ title: 'Success', description: 'Product updated successfully' });
       } else {
-        await createProduct({
-          ...formData,
-          is_active: true,
-        });
+        await createProduct(productData);
         toast({ title: 'Success', description: 'Product created successfully' });
       }
       setDialogOpen(false);
       resetForm();
       loadData();
     } catch (error) {
+      console.error('Product save error:', error);
       toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Failed to save product',

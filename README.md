@@ -27,7 +27,9 @@ StockMaster is a comprehensive, real-time inventory management system designed t
 
 - **Frontend**: React 18 + TypeScript + Vite
 - **UI Framework**: shadcn/ui + Tailwind CSS
-- **Backend**: Supabase (PostgreSQL + Authentication)
+- **Backend Options**: 
+  - **Option 1**: Supabase (PostgreSQL + Authentication) - Currently configured
+  - **Option 2**: MongoDB Atlas + Express.js - Available (see MONGODB_MIGRATION_GUIDE.md)
 - **State Management**: React Context + Hooks
 - **Routing**: React Router v6
 
@@ -43,14 +45,24 @@ StockMaster is a comprehensive, real-time inventory management system designed t
 │   ├── db/
 │   │   ├── supabase.ts    # Supabase client
 │   │   └── api.ts         # Database API functions
+│   ├── lib/
+│   │   └── api-client.ts  # MongoDB API client (for MongoDB option)
 │   ├── pages/             # Application pages
 │   ├── types/             # TypeScript type definitions
 │   ├── hooks/             # Custom React hooks
-│   ├── lib/               # Utility functions
 │   ├── routes.tsx         # Route configuration
 │   └── App.tsx            # Main application component
+├── server/                # MongoDB Express.js backend (optional)
+│   ├── src/
+│   │   ├── models/        # Mongoose models
+│   │   ├── routes/        # API routes
+│   │   ├── controllers/   # Route controllers
+│   │   ├── middleware/    # Auth middleware
+│   │   ├── config/        # Database configuration
+│   │   └── server.js      # Express server
+│   └── package.json
 ├── supabase/
-│   └── migrations/        # Database migrations
+│   └── migrations/        # Database migrations (for Supabase)
 └── public/                # Static assets
 ```
 
@@ -60,7 +72,8 @@ StockMaster is a comprehensive, real-time inventory management system designed t
 
 - Node.js ≥ 20
 - npm ≥ 10
-- Supabase account (for production deployment)
+- **For Supabase Option**: Supabase account (currently configured)
+- **For MongoDB Option**: MongoDB Atlas account (see MONGODB_MIGRATION_GUIDE.md)
 
 ### Environment Setup
 
@@ -172,10 +185,26 @@ The application can be deployed to any static hosting service:
 
 ### Database
 
-The application uses Supabase for backend services:
+The application supports two backend options:
+
+#### Option 1: Supabase (Currently Configured)
 - Database: PostgreSQL
 - Authentication: Supabase Auth
 - Real-time subscriptions: Available but not currently implemented
+
+#### Option 2: MongoDB Atlas + Express.js
+- Database: MongoDB Atlas
+- Authentication: JWT-based
+- Complete REST API with Express.js
+- See **MONGODB_MIGRATION_GUIDE.md** for detailed setup instructions
+
+To migrate to MongoDB:
+1. Follow the instructions in `MONGODB_MIGRATION_GUIDE.md`
+2. Set up MongoDB Atlas cluster
+3. Install server dependencies: `cd server && npm install`
+4. Configure environment variables
+5. Start the backend server: `npm start`
+6. Update frontend to use MongoDB API client
 
 ## Security
 
