@@ -1,4 +1,4 @@
-# StockMaster Quick Start Guide
+# JSHS StockMaster Quick Start Guide
 
 ## 🎯 What's New
 
@@ -6,6 +6,11 @@
 - **Product Creation Error**: Fixed the "Failed to save product" error when adding new products without a category
 
 ### 🚀 New Features
+- **Landing Page**: Professional landing page showcasing JSHS brand and StockMaster features
+  - Modern, responsive design
+  - Feature highlights and benefits
+  - Call-to-action buttons
+  - Dark/light mode support
 - **MongoDB Atlas Support**: Complete Express.js + MongoDB backend as an alternative to Supabase
   - Full REST API with JWT authentication
   - Role-based access control

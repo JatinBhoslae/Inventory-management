@@ -1,3 +1,4 @@
+import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
 import Receipts from './pages/Receipts';
@@ -17,8 +18,14 @@ export interface RouteConfig {
 
 const routes: RouteConfig[] = [
   {
-    name: 'Dashboard',
+    name: 'Landing',
     path: '/',
+    element: <Landing />,
+    visible: false,
+  },
+  {
+    name: 'Dashboard',
+    path: '/dashboard',
     element: <Dashboard />,
   },
   {

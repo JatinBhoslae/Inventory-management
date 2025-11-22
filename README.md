@@ -1,12 +1,13 @@
-# StockMaster Inventory Management System
+# JSHS StockMaster Inventory Management System
 
 ## Overview
 
-StockMaster is a comprehensive, real-time inventory management system designed to replace manual registers and Excel-based tracking methods. The application digitizes and streamlines all stock-related operations across multiple warehouses, providing automated stock tracking, movement logging, and real-time visibility into inventory levels.
+JSHS StockMaster is a comprehensive, real-time inventory management system designed to replace manual registers and Excel-based tracking methods. The application digitizes and streamlines all stock-related operations across multiple warehouses, providing automated stock tracking, movement logging, and real-time visibility into inventory levels.
 
 ## Features
 
 ### Core Functionality
+- **Landing Page**: Professional landing page showcasing JSHS brand and StockMaster features
 - **Dashboard Control Center**: Real-time KPIs including total products, low stock alerts, pending receipts, and pending deliveries
 - **Product Management**: Complete CRUD operations for product catalog with SKU tracking, categories, and stock levels
 - **Stock Operations**:
