@@ -1,21 +1,41 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getActiveProducts } from '@/db/api';
+import { getActiveProducts, getCategories } from '@/db/api';
 import type { Product } from '@/types/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
 export default function Shop() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [filtered, setFiltered] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [category, setCategory] = useState<string>('all');
 
   useEffect(() => {
-    getActiveProducts()
-      .then(setProducts)
-      .finally(() => setLoading(false));
+    const run = async () => {
+      const [p, c] = await Promise.all([getActiveProducts(), getCategories()]);
+      setProducts(p);
+      setCategories(c.map((x: any) => ({ id: x.id, name: x.name })));
+      setLoading(false);
+    };
+    run();
   }, []);
+
+  useEffect(() => {
+    const q = search.trim().toLowerCase();
+    const list = products.filter(p => {
+      const matchesText = !q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q);
+      const matchesCat = category === 'all' || p.category_id === category;
+      return matchesText && matchesCat;
+    });
+    setFiltered(list);
+  }, [products, search, category]);
 
   return (
     <div className="container py-6 space-y-6">
@@ -40,8 +60,26 @@ export default function Shop() {
       ) : products.length === 0 ? (
         <div className="text-center text-muted-foreground">No products available</div>
       ) : (
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
-          {products.map((p) => (
+        <>
+          <div className="flex items-center justify-between gap-3">
+            <Input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search by name or SKU"
+              className="max-w-xs"
+            />
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="w-48"><SelectValue placeholder="Category" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map(c => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((p) => (
             <Link key={p.id} to={`/product/${p.id}`}>
               <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 bg-gradient-to-r from-violet-500/10 to-indigo-500/10">
                 <CardHeader>
@@ -57,7 +95,8 @@ export default function Shop() {
               </Card>
             </Link>
           ))}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

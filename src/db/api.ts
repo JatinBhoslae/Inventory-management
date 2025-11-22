@@ -115,6 +115,7 @@ export const updateWarehouse = async (
   return data;
 };
 
+
 export const deleteWarehouse = async (id: string): Promise<void> => {
   const { error } = await supabase.from("warehouses").delete().eq("id", id);
 
@@ -161,6 +162,7 @@ export const updateCategory = async (
   if (!data) throw new Error("Category not found");
   return data;
 };
+
 
 export const deleteCategory = async (id: string): Promise<void> => {
   const { error } = await supabase.from("categories").delete().eq("id", id);
@@ -233,6 +235,7 @@ export const updateProduct = async (
   if (!data) throw new Error("Product not found");
   return data;
 };
+
 
 export const deleteProduct = async (id: string): Promise<void> => {
   const { error } = await supabase.from("products").delete().eq("id", id);
@@ -378,6 +381,7 @@ export const updateCustomer = async (
   if (!data) throw new Error("Customer not found");
   return data;
 };
+
 
 export const deleteCustomer = async (id: string): Promise<void> => {
   const { error } = await supabase.from("customers").delete().eq("id", id);
@@ -568,6 +572,72 @@ export const deleteDelivery = async (id: string): Promise<void> => {
   if (error) throw error;
 };
 
+export const validateDelivery = async (
+  id: string,
+  validated_by?: string | null
+): Promise<DeliveryWithDetails> => {
+  const delivery = await getDeliveryById(id);
+  if (!delivery) throw new Error("Delivery not found");
+  if (delivery.status === "done") return delivery;
+  const { data: lines, error: lErr } = await supabase
+    .from("delivery_lines")
+    .select("*")
+    .eq("delivery_id", id);
+  if (lErr) throw lErr;
+  const deliveryLines = Array.isArray(lines) ? lines : [];
+  for (const line of deliveryLines) {
+    const { data: product, error: pErr } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", line.product_id)
+      .maybeSingle();
+    if (pErr) throw pErr;
+    if (!product) throw new Error("Product not found");
+    const before = Number(product.current_stock) || 0;
+    const qty = Number(line.quantity) || 0;
+    if (before < qty) throw new Error("Insufficient stock");
+    const after = before - qty;
+    const { error: uErr } = await supabase
+      .from("products")
+      .update({ current_stock: after })
+      .eq("id", line.product_id);
+    if (uErr) throw uErr;
+    const { error: ledErr } = await supabase.from("stock_ledger").insert({
+      product_id: line.product_id,
+      warehouse_id: delivery.warehouse_id || null,
+      operation_type: "delivery",
+      operation_id: delivery.id,
+      operation_number: delivery.delivery_number,
+      quantity_change: -Math.abs(qty),
+      stock_before: before,
+      stock_after: after,
+      created_by: validated_by || delivery.created_by || null,
+    });
+    if (ledErr) throw ledErr;
+  }
+  const { data: updated, error: dErr } = await supabase
+    .from("deliveries")
+    .update({
+      status: "done",
+      validated_by: validated_by || null,
+      validated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select(
+      `
+      *,
+      customer:customers(*),
+      warehouse:warehouses(*),
+      creator:profiles!deliveries_created_by_fkey(*),
+      lines:delivery_lines(*, product:products(*))
+    `
+    )
+    .maybeSingle();
+  if (dErr) throw dErr;
+  if (!updated) throw new Error("Delivery not found");
+  return updated as DeliveryWithDetails;
+};
+
 // Transfer APIs
 export const getTransfers = async (): Promise<TransferWithDetails[]> => {
   const { data, error } = await supabase
@@ -661,6 +731,90 @@ export const deleteTransfer = async (id: string): Promise<void> => {
   if (error) throw error;
 };
 
+export const validateTransfer = async (
+  id: string,
+  validated_by?: string | null
+): Promise<TransferWithDetails> => {
+  const transfer = await getTransferById(id);
+  if (!transfer) throw new Error("Transfer not found");
+  if (transfer.status === "done") return transfer;
+  const { data: lines, error: lErr } = await supabase
+    .from("transfer_lines")
+    .select("*")
+    .eq("transfer_id", id);
+  if (lErr) throw lErr;
+  const transferLines = Array.isArray(lines) ? lines : [];
+  for (const line of transferLines) {
+    const { data: product, error: pErr } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", line.product_id)
+      .maybeSingle();
+    if (pErr) throw pErr;
+    if (!product) throw new Error("Product not found");
+    const before = Number(product.current_stock) || 0;
+    const qty = Number(line.quantity) || 0;
+    if (before < qty) throw new Error("Insufficient stock");
+    const afterOut = before - qty;
+    const { error: uErr1 } = await supabase
+      .from("products")
+      .update({ current_stock: afterOut })
+      .eq("id", line.product_id);
+    if (uErr1) throw uErr1;
+    const { error: ledErr1 } = await supabase.from("stock_ledger").insert({
+      product_id: line.product_id,
+      warehouse_id: transfer.from_warehouse_id || null,
+      operation_type: "transfer_out",
+      operation_id: transfer.id,
+      operation_number: transfer.transfer_number,
+      quantity_change: -Math.abs(qty),
+      stock_before: before,
+      stock_after: afterOut,
+      created_by: validated_by || transfer.created_by || null,
+    });
+    if (ledErr1) throw ledErr1;
+    const afterIn = afterOut + qty;
+    const { error: uErr2 } = await supabase
+      .from("products")
+      .update({ current_stock: afterIn })
+      .eq("id", line.product_id);
+    if (uErr2) throw uErr2;
+    const { error: ledErr2 } = await supabase.from("stock_ledger").insert({
+      product_id: line.product_id,
+      warehouse_id: transfer.to_warehouse_id || null,
+      operation_type: "transfer_in",
+      operation_id: transfer.id,
+      operation_number: transfer.transfer_number,
+      quantity_change: Math.abs(qty),
+      stock_before: afterOut,
+      stock_after: afterIn,
+      created_by: validated_by || transfer.created_by || null,
+    });
+    if (ledErr2) throw ledErr2;
+  }
+  const { data: updated, error: tErr } = await supabase
+    .from("transfers")
+    .update({
+      status: "done",
+      validated_by: validated_by || null,
+      validated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select(
+      `
+      *,
+      from_warehouse:warehouses!transfers_from_warehouse_id_fkey(*),
+      to_warehouse:warehouses!transfers_to_warehouse_id_fkey(*),
+      creator:profiles!transfers_created_by_fkey(*),
+      lines:transfer_lines(*, product:products(*))
+    `
+    )
+    .maybeSingle();
+  if (tErr) throw tErr;
+  if (!updated) throw new Error("Transfer not found");
+  return updated as TransferWithDetails;
+};
+
 // Adjustment APIs
 export const getAdjustments = async (): Promise<AdjustmentWithDetails[]> => {
   const { data, error } = await supabase
@@ -752,6 +906,70 @@ export const deleteAdjustment = async (id: string): Promise<void> => {
   if (error) throw error;
 };
 
+export const validateAdjustment = async (
+  id: string,
+  validated_by?: string | null
+): Promise<AdjustmentWithDetails> => {
+  const adjustment = await getAdjustmentById(id);
+  if (!adjustment) throw new Error("Adjustment not found");
+  if (adjustment.status === "done") return adjustment;
+  const { data: lines, error: lErr } = await supabase
+    .from("adjustment_lines")
+    .select("*")
+    .eq("adjustment_id", id);
+  if (lErr) throw lErr;
+  const adjustmentLines = Array.isArray(lines) ? lines : [];
+  for (const line of adjustmentLines) {
+    const { data: product, error: pErr } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", line.product_id)
+      .maybeSingle();
+    if (pErr) throw pErr;
+    if (!product) throw new Error("Product not found");
+    const before = Number(product.current_stock) || 0;
+    const newQty = Number(line.new_quantity) || 0;
+    const diff = Number(line.difference ?? newQty - before);
+    const { error: uErr } = await supabase
+      .from("products")
+      .update({ current_stock: newQty })
+      .eq("id", line.product_id);
+    if (uErr) throw uErr;
+    const { error: ledErr } = await supabase.from("stock_ledger").insert({
+      product_id: line.product_id,
+      warehouse_id: adjustment.warehouse_id || null,
+      operation_type: "adjustment",
+      operation_id: adjustment.id,
+      operation_number: adjustment.adjustment_number,
+      quantity_change: diff,
+      stock_before: before,
+      stock_after: newQty,
+      created_by: validated_by || adjustment.created_by || null,
+    });
+    if (ledErr) throw ledErr;
+  }
+  const { data: updated, error: aErr } = await supabase
+    .from("adjustments")
+    .update({
+      status: "done",
+      validated_by: validated_by || null,
+      validated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select(
+      `
+      *,
+      warehouse:warehouses(*),
+      creator:profiles!adjustments_created_by_fkey(*),
+      lines:adjustment_lines(*, product:products(*))
+    `
+    )
+    .maybeSingle();
+  if (aErr) throw aErr;
+  if (!updated) throw new Error("Adjustment not found");
+  return updated as AdjustmentWithDetails;
+};
+
 // Stock Ledger APIs
 export const getStockLedger = async (
   productId?: string,
@@ -782,6 +1000,73 @@ export const getLowStockProducts = async (): Promise<LowStockProduct[]> => {
 
   if (error) throw error;
   return Array.isArray(data) ? data : [];
+};
+
+ 
+
+export const validateReceipt = async (
+  id: string,
+  validated_by?: string | null
+): Promise<ReceiptWithDetails> => {
+  const receipt = await getReceiptById(id);
+  if (!receipt) throw new Error("Receipt not found");
+  if (receipt.status === "done") return receipt;
+  const { data: lines, error: lErr } = await supabase
+    .from("receipt_lines")
+    .select("*")
+    .eq("receipt_id", id);
+  if (lErr) throw lErr;
+  const receiptLines = Array.isArray(lines) ? lines : [];
+  for (const line of receiptLines) {
+    const { data: product, error: pErr } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", line.product_id)
+      .maybeSingle();
+    if (pErr) throw pErr;
+    if (!product) throw new Error("Product not found");
+    const before = Number(product.current_stock) || 0;
+    const qty = Number(line.quantity) || 0;
+    const after = before + qty;
+    const { error: uErr } = await supabase
+      .from("products")
+      .update({ current_stock: after })
+      .eq("id", line.product_id);
+    if (uErr) throw uErr;
+    const { error: ledErr } = await supabase.from("stock_ledger").insert({
+      product_id: line.product_id,
+      warehouse_id: receipt.warehouse_id || null,
+      operation_type: "receipt",
+      operation_id: receipt.id,
+      operation_number: receipt.receipt_number,
+      quantity_change: Math.abs(qty),
+      stock_before: before,
+      stock_after: after,
+      created_by: validated_by || receipt.created_by || null,
+    });
+    if (ledErr) throw ledErr;
+  }
+  const { data: updated, error: rErr } = await supabase
+    .from("receipts")
+    .update({
+      status: "done",
+      validated_by: validated_by || null,
+      validated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select(
+      `
+      *,
+      supplier:suppliers(*),
+      warehouse:warehouses(*),
+      creator:profiles!receipts_created_by_fkey(*),
+      lines:receipt_lines(*, product:products(*))
+    `
+    )
+    .maybeSingle();
+  if (rErr) throw rErr;
+  if (!updated) throw new Error("Receipt not found");
+  return updated as ReceiptWithDetails;
 };
 
 // Dashboard KPIs

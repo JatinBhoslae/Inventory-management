@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { placeCustomerOrder } from '@/db/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 type CartItem = { product_id: string; name: string; sku: string; quantity: number };
 
@@ -14,6 +15,7 @@ export default function Checkout() {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [cardNumber, setCardNumber] = useState('');
+  const [upiId, setUpiId] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user, profile } = useAuth();
@@ -21,6 +23,10 @@ export default function Checkout() {
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
     setItems(cart);
+    if (profile) {
+      setName(profile.full_name || '');
+      setAddress((profile.address as any) || '');
+    }
   }, []);
 
   const payAndPlaceOrder = async () => {
@@ -77,10 +83,20 @@ export default function Checkout() {
               <Label>Address</Label>
               <Input value={address} onChange={e => setAddress(e.target.value)} placeholder="Delivery address" />
             </div>
-            <div className="space-y-2">
-              <Label>Card Number</Label>
-              <Input value={cardNumber} onChange={e => setCardNumber(e.target.value)} placeholder="4242 4242 4242 4242" />
-            </div>
+            <Tabs defaultValue="card" className="w-full">
+              <TabsList className="grid grid-cols-2 w-full">
+                <TabsTrigger value="card">Card</TabsTrigger>
+                <TabsTrigger value="upi">UPI</TabsTrigger>
+              </TabsList>
+              <TabsContent value="card" className="space-y-2 mt-4">
+                <Label>Card Number</Label>
+                <Input value={cardNumber} onChange={e => setCardNumber(e.target.value)} placeholder="4242 4242 4242 4242" />
+              </TabsContent>
+              <TabsContent value="upi" className="space-y-2 mt-4">
+                <Label>UPI ID</Label>
+                <Input value={upiId} onChange={e => setUpiId(e.target.value)} placeholder="yourname@upi" />
+              </TabsContent>
+            </Tabs>
             <Button className="w-full" disabled={loading || items.length === 0} onClick={payAndPlaceOrder}>
               {loading ? 'Processing...' : 'Pay & Place Order'}
             </Button>

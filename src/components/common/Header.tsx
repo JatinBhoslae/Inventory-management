@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Package, User, LogOut, Menu } from 'lucide-react';
+import { Package, User, LogOut, Menu, ShoppingCart, ClipboardList } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
@@ -67,6 +67,12 @@ const Header = () => {
           {user || adminMode ? (
             <>
               <ThemeToggle />
+              <Link to="/cart" className="text-muted-foreground hover:text-foreground">
+                <ShoppingCart className="h-5 w-5" />
+              </Link>
+              <Link to="/user/orders" className="text-muted-foreground hover:text-foreground">
+                <ClipboardList className="h-5 w-5" />
+              </Link>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">
