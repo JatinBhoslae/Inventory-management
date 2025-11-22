@@ -41,6 +41,7 @@ export default function Products() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const { toast } = useToast();
+  const [search, setSearch] = useState('');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -262,10 +263,18 @@ export default function Products() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Package className="h-5 w-5" />
-            Product List
-          </CardTitle>
+          <div className="flex items-center justify-between gap-3">
+            <CardTitle className="flex items-center gap-2">
+              <Package className="h-5 w-5" />
+              Product List
+            </CardTitle>
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by name or SKU"
+              className="max-w-xs"
+            />
+          </div>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -294,7 +303,15 @@ export default function Products() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {products.map((product) => (
+                  {(products.filter((p) => {
+                    const q = search.trim().toLowerCase();
+                    if (!q) return true;
+                    const nameMatch = p.name.toLowerCase().includes(q);
+                    const skuMatch = p.sku.toLowerCase().includes(q);
+                    const catName = getCategoryName(p.category_id).toLowerCase();
+                    const catMatch = catName.includes(q);
+                    return nameMatch || skuMatch || catMatch;
+                  })).map((product) => (
                     <TableRow key={product.id}>
                       <TableCell className="font-medium">{product.name}</TableCell>
                       <TableCell>{product.sku}</TableCell>

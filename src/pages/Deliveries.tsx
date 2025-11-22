@@ -67,6 +67,7 @@ export default function Deliveries() {
                     <TableHead>Customer</TableHead>
                     <TableHead>Warehouse</TableHead>
                     <TableHead>Date</TableHead>
+                    <TableHead>Items</TableHead>
                     <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -77,6 +78,11 @@ export default function Deliveries() {
                       <TableCell>{delivery.customer?.name || '-'}</TableCell>
                       <TableCell>{delivery.warehouse?.name || '-'}</TableCell>
                       <TableCell>{new Date(delivery.delivery_date).toLocaleDateString()}</TableCell>
+                      <TableCell className="text-sm">
+                        {(delivery.lines || [])
+                          .map((l) => `${l.product?.name || ''} × ${l.quantity}`)
+                          .join(', ') || '-'}
+                      </TableCell>
                       <TableCell>
                         <Badge variant={delivery.status === 'done' ? 'default' : 'outline'}>
                           {delivery.status}

@@ -14,6 +14,7 @@ export default function Login() {
   const [mode, setMode] = useState<'admin' | 'user'>('admin');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
@@ -41,8 +42,12 @@ export default function Login() {
         return;
       }
 
-      if (!username || !password) {
+      if (!username || !password || (isRegister && !confirmPassword)) {
         toast({ title: 'Error', description: 'Please fill in all fields', variant: 'destructive' });
+        return;
+      }
+      if (isRegister && password !== confirmPassword) {
+        toast({ title: 'Error', description: 'Passwords do not match', variant: 'destructive' });
         return;
       }
       if (!/^[a-zA-Z0-9_]+$/.test(username)) {
@@ -113,6 +118,12 @@ export default function Login() {
                   <Label htmlFor="password">Password</Label>
                   <Input id="password" type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} required />
                 </div>
+                {isRegister && (
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm_password">Confirm Password</Label>
+                    <Input id="confirm_password" type="password" placeholder="Confirm your password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} disabled={loading} required />
+                  </div>
+                )}
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? 'Please wait...' : isRegister ? 'Sign Up' : 'Sign In'}
                 </Button>

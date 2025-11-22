@@ -63,9 +63,10 @@ export default function StockLedgerPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Operation</TableHead>
-                    <TableHead>Reference</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Operation</TableHead>
+                  <TableHead>Item</TableHead>
+                  <TableHead>Reference</TableHead>
                     <TableHead className="text-right">Change</TableHead>
                     <TableHead className="text-right">Before</TableHead>
                     <TableHead className="text-right">After</TableHead>
@@ -78,6 +79,7 @@ export default function StockLedgerPage() {
                       <TableCell>
                         <Badge variant="outline">{entry.operation_type}</Badge>
                       </TableCell>
+                      <TableCell className="font-medium">{(entry as any).product?.name || '-'}</TableCell>
                       <TableCell className="font-medium">{entry.operation_number}</TableCell>
                       <TableCell className="text-right">
                         <span className={entry.quantity_change > 0 ? 'text-success' : 'text-destructive'}>

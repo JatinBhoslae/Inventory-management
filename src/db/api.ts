@@ -309,6 +309,35 @@ export const getCustomers = async (): Promise<Customer[]> => {
   return Array.isArray(data) ? data : [];
 };
 
+export const getOrCreateCustomerForProfile = async (profileId: string): Promise<Customer> => {
+  const { data: profile, error: pErr } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', profileId)
+    .maybeSingle();
+  if (pErr) throw pErr;
+  if (!profile) throw new Error('Profile not found');
+  const code = `PROFILE-${profileId}`;
+  const name = profile.full_name || profile.email || code;
+  const email = profile.email || null;
+
+  const { data: existing } = await supabase
+    .from('customers')
+    .select('*')
+    .eq('code', code)
+    .maybeSingle();
+  if (existing) return existing as Customer;
+
+  const { data: created, error: cErr } = await supabase
+    .from('customers')
+    .insert({ name, code, email, is_active: true })
+    .select()
+    .maybeSingle();
+  if (cErr) throw cErr;
+  if (!created) throw new Error('Failed to create customer');
+  return created as Customer;
+};
+
 export const getActiveCustomers = async (): Promise<Customer[]> => {
   const { data, error } = await supabase
     .from("customers")
@@ -730,7 +759,7 @@ export const getStockLedger = async (
 ): Promise<StockLedger[]> => {
   let query = supabase
     .from("stock_ledger")
-    .select("*")
+    .select("*, product:products(name, sku)")
     .order("created_at", { ascending: false });
 
   if (productId) {
@@ -843,7 +872,7 @@ export const placeCustomerOrder = async (
   warehouse_id?: string | null
 ): Promise<Delivery> => {
   const deliveryNumber = `WEB-${Date.now()}`;
-  const deliveryPayload: Omit<Delivery, 'id' | 'created_at' | 'validated_by' | 'validated_at'> = {
+  let deliveryPayload: Omit<Delivery, 'id' | 'created_at' | 'validated_by' | 'validated_at'> = {
     delivery_number: deliveryNumber,
     customer_id: null,
     warehouse_id: warehouse_id || null,
@@ -852,6 +881,12 @@ export const placeCustomerOrder = async (
     notes: 'Web order',
     created_by: created_by || null,
   } as any;
+  if (created_by) {
+    try {
+      const customer = await getOrCreateCustomerForProfile(created_by);
+      deliveryPayload = { ...deliveryPayload, customer_id: customer.id } as any;
+    } catch {}
+  }
   const linesPayload = items.map(i => ({ product_id: i.product_id, quantity: i.quantity } as any));
   const delivery = await createDelivery(deliveryPayload, linesPayload);
   for (const item of items) {
