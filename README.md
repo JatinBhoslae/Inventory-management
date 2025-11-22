@@ -1,92 +1,235 @@
-# Welcome to Your Miaoda Project
+# StockMaster Inventory Management System
 
-## Project Info
+## Overview
 
-## Project Directory
+StockMaster is a comprehensive, real-time inventory management system designed to replace manual registers and Excel-based tracking methods. The application digitizes and streamlines all stock-related operations across multiple warehouses, providing automated stock tracking, movement logging, and real-time visibility into inventory levels.
 
-```
-├── README.md # Documentation
-├── components.json # Component library configuration
-├── eslint.config.js # ESLint configuration
-├── index.html # Entry file
-├── package.json # Package management
-├── postcss.config.js # PostCSS configuration
-├── public # Static resources directory
-│   ├── favicon.png # Icon
-│   └── images # Image resources
-├── src # Source code directory
-│   ├── App.tsx # Entry file
-│   ├── components # Components directory
-│   ├── context # Context directory
-│   ├── db # Database configuration directory
-│   ├── hooks # Common hooks directory
-│   ├── index.css # Global styles
-│   ├── layout # Layout directory
-│   ├── lib # Utility library directory
-│   ├── main.tsx # Entry file
-│   ├── routes.tsx # Routing configuration
-│   ├── pages # Pages directory
-│   ├── services # Database interaction directory
-│   ├── types # Type definitions directory
-├── tsconfig.app.json # TypeScript frontend configuration file
-├── tsconfig.json # TypeScript configuration file
-├── tsconfig.node.json # TypeScript Node.js configuration file
-└── vite.config.ts # Vite configuration file
-```
+## Features
 
-## Tech Stack
+### Core Functionality
+- **Dashboard Control Center**: Real-time KPIs including total products, low stock alerts, pending receipts, and pending deliveries
+- **Product Management**: Complete CRUD operations for product catalog with SKU tracking, categories, and stock levels
+- **Stock Operations**:
+  - **Receipts**: Manage incoming stock from suppliers
+  - **Deliveries**: Handle outgoing stock to customers
+  - **Internal Transfers**: Move stock between warehouses
+  - **Stock Adjustments**: Correct discrepancies and physical count differences
+- **Stock Ledger**: Comprehensive audit trail of all stock movements
+- **Low Stock Alerts**: Automatic notifications when items reach minimum threshold
+- **Multi-Warehouse Support**: Manage inventory across multiple physical locations
 
-Vite, TypeScript, React, Supabase
+### User Roles
+- **Admin**: Full system access (first registered user becomes admin)
+- **Inventory Manager**: Oversee operations and make strategic decisions
+- **Warehouse Staff**: Execute physical operations
 
-## Development Guidelines
+## Technology Stack
 
-### How to edit code locally?
+- **Frontend**: React 18 + TypeScript + Vite
+- **UI Framework**: shadcn/ui + Tailwind CSS
+- **Backend**: Supabase (PostgreSQL + Authentication)
+- **State Management**: React Context + Hooks
+- **Routing**: React Router v6
 
-You can choose [VSCode](https://code.visualstudio.com/Download) or any IDE you prefer. The only requirement is to have Node.js and npm installed.
-
-### Environment Requirements
+## Project Structure
 
 ```
-# Node.js ≥ 20
-# npm ≥ 10
-Example:
-# node -v   # v20.18.3
-# npm -v    # 10.8.2
+├── src/
+│   ├── components/
+│   │   ├── auth/          # Authentication components
+│   │   ├── common/        # Shared components (Header, etc.)
+│   │   └── ui/            # shadcn/ui components
+│   ├── contexts/          # React contexts (Auth)
+│   ├── db/
+│   │   ├── supabase.ts    # Supabase client
+│   │   └── api.ts         # Database API functions
+│   ├── pages/             # Application pages
+│   ├── types/             # TypeScript type definitions
+│   ├── hooks/             # Custom React hooks
+│   ├── lib/               # Utility functions
+│   ├── routes.tsx         # Route configuration
+│   └── App.tsx            # Main application component
+├── supabase/
+│   └── migrations/        # Database migrations
+└── public/                # Static assets
 ```
 
-### Installing Node.js on Windows
+## Getting Started
 
+### Prerequisites
+
+- Node.js ≥ 20
+- npm ≥ 10
+- Supabase account (for production deployment)
+
+### Environment Setup
+
+1. **Clone or extract the project**
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Variables**
+   
+   The `.env` file is already configured with Supabase credentials:
+   ```
+   VITE_SUPABASE_URL=https://vbqqbvithnalykkehkro.supabase.co
+   VITE_SUPABASE_ANON_KEY=<your-anon-key>
+   VITE_APP_ID=app-7q5l3ibtv7cx
+   VITE_LOGIN_TYPE=gmail
+   ```
+
+### Local Development
+
+1. **Start the development server**
+   ```bash
+   npm run dev -- --host 127.0.0.1
+   ```
+   
+   Or alternatively:
+   ```bash
+   npx vite --host 127.0.0.1
+   ```
+
+2. **Access the application**
+   
+   Open your browser and navigate to `http://127.0.0.1:5173`
+
+3. **First-time setup**
+   - Register a new account (first user becomes admin automatically)
+   - Start adding products, warehouses, suppliers, and customers
+   - Begin tracking your inventory operations
+
+### Database Setup
+
+The database schema is already deployed to Supabase. The migration includes:
+
+- User profiles with role-based access control
+- Warehouses, categories, products
+- Suppliers and customers
+- Stock operation tables (receipts, deliveries, transfers, adjustments)
+- Stock ledger for audit trail
+- Low stock alerts view
+
+## User Guide
+
+### Getting Started
+
+1. **Login/Register**
+   - Navigate to the login page
+   - Register with a username and password
+   - The first registered user automatically becomes an admin
+
+2. **Dashboard**
+   - View key performance indicators
+   - Monitor low stock alerts
+   - Access quick actions for common operations
+
+3. **Product Management**
+   - Add products with SKU, category, unit of measure
+   - Set initial stock and minimum stock levels
+   - Track current stock levels in real-time
+
+4. **Stock Operations**
+   - **Receipts**: Record incoming stock from suppliers
+   - **Deliveries**: Create delivery orders for customers
+   - **Transfers**: Move stock between warehouses
+   - **Adjustments**: Correct stock discrepancies
+
+5. **Stock Ledger**
+   - View complete history of all stock movements
+   - Track changes with before/after quantities
+   - Audit trail for compliance
+
+## Development
+
+### Code Quality
+
+Run linting:
+```bash
+npm run lint
 ```
-# Step 1: Visit the Node.js official website: https://nodejs.org/, click download. The website will automatically suggest a suitable version (32-bit or 64-bit) for your system.
-# Step 2: Run the installer: Double-click the downloaded installer to run it.
-# Step 3: Complete the installation: Follow the installation wizard to complete the process.
-# Step 4: Verify installation: Open Command Prompt (cmd) or your IDE terminal, and type `node -v` and `npm -v` to check if Node.js and npm are installed correctly.
+
+### Build for Production
+
+```bash
+npm run build
 ```
 
-### Installing Node.js on macOS
+The build output will be in the `dist/` directory.
 
-```
-# Step 1: Using Homebrew (Recommended method): Open Terminal. Type the command `brew install node` and press Enter. If Homebrew is not installed, you need to install it first by running the following command in Terminal:
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-Alternatively, use the official installer: Visit the Node.js official website. Download the macOS .pkg installer. Open the downloaded .pkg file and follow the prompts to complete the installation.
-# Step 2: Verify installation: Open Command Prompt (cmd) or your IDE terminal, and type `node -v` and `npm -v` to check if Node.js and npm are installed correctly.
-```
+## Deployment
 
-### After installation, follow these steps:
+### Frontend Deployment
 
-```
-# Step 1: Download the code package
-# Step 2: Extract the code package
-# Step 3: Open the code package with your IDE and navigate into the code directory
-# Step 4: In the IDE terminal, run the command to install dependencies: npm i
-# Step 5: In the IDE terminal, run the command to start the development server: npm run dev -- --host 127.0.0.1
-# Step 6: if step 5 failed, try this command to start the development server: npx vite --host 127.0.0.1
-```
+The application can be deployed to any static hosting service:
+- Vercel
+- Netlify
+- AWS S3 + CloudFront
+- Azure Static Web Apps
 
-### How to develop backend services?
+### Database
 
-Configure environment variables and install relevant dependencies.If you need to use a database, please use the official version of Supabase.
+The application uses Supabase for backend services:
+- Database: PostgreSQL
+- Authentication: Supabase Auth
+- Real-time subscriptions: Available but not currently implemented
 
-## Learn More
+## Security
 
-You can also check the help documentation: Download and Building the app（ [https://intl.cloud.baidu.com/en/doc/MIAODA/s/download-and-building-the-app-en](https://intl.cloud.baidu.com/en/doc/MIAODA/s/download-and-building-the-app-en)）to learn more detailed content.
+- Username/password authentication with automatic email suffix
+- Row Level Security (RLS) on sensitive tables
+- Role-based access control
+- First user becomes admin automatically
+- Secure session management
+
+## Design System
+
+- **Primary Color**: Professional Blue (#2563EB / hsl(217 91% 60%))
+- **Success Color**: Green (#10B981 / hsl(142 71% 45%))
+- **Destructive Color**: Red (#EF4444 / hsl(0 84% 60%))
+- **Typography**: System font stack
+- **Components**: shadcn/ui with Tailwind CSS
+- **Responsive**: Desktop-first with mobile adaptation
+
+## Future Enhancements
+
+Potential features for future development:
+- Barcode scanning integration
+- Advanced reporting and analytics
+- Export functionality (PDF, Excel, CSV)
+- Email notifications for low stock
+- Multi-currency support
+- Batch operations
+- Advanced filtering and search
+- Real-time collaboration features
+- Mobile app (React Native)
+
+## Support
+
+For issues or questions:
+1. Check the documentation
+2. Review the code comments
+3. Consult Supabase documentation for backend issues
+4. Review shadcn/ui documentation for UI components
+
+## License
+
+This project is proprietary software. All rights reserved.
+
+## Credits
+
+Built with:
+- [React](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vitejs.dev/)
+- [Supabase](https://supabase.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Lucide Icons](https://lucide.dev/)
+
+---
+
+**StockMaster** - Streamline Your Inventory Management
