@@ -12,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import ThemeToggle from '@/components/common/ThemeToggle';
 import routes from '@/routes';
 import { useState } from 'react';
 
@@ -57,6 +58,7 @@ const Header = () => {
         <div className="flex items-center gap-4">
           {user ? (
             <>
+              <ThemeToggle />
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">

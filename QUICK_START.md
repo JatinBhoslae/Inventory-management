@@ -5,11 +5,15 @@
 ### ✅ Bug Fixed
 - **Product Creation Error**: Fixed the "Failed to save product" error when adding new products without a category
 
-### 🚀 New Feature: MongoDB Atlas Support
-- Complete Express.js + MongoDB backend as an alternative to Supabase
-- Full REST API with JWT authentication
-- Role-based access control
-- Comprehensive documentation
+### 🚀 New Features
+- **MongoDB Atlas Support**: Complete Express.js + MongoDB backend as an alternative to Supabase
+  - Full REST API with JWT authentication
+  - Role-based access control
+  - Comprehensive documentation
+- **Dark/Light Mode Toggle**: Switch between dark and light themes with system preference support
+  - Available in header for logged-in users
+  - Available on login page for all users
+  - Persists preference in localStorage
 
 ## 📋 Choose Your Backend
 

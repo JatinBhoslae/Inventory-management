@@ -17,6 +17,7 @@ StockMaster is a comprehensive, real-time inventory management system designed t
 - **Stock Ledger**: Comprehensive audit trail of all stock movements
 - **Low Stock Alerts**: Automatic notifications when items reach minimum threshold
 - **Multi-Warehouse Support**: Manage inventory across multiple physical locations
+- **Dark/Light Mode**: Toggle between dark and light themes with system preference support
 
 ### User Roles
 - **Admin**: Full system access (first registered user becomes admin)
